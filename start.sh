@@ -23,11 +23,19 @@ fi
 # 激活虚拟环境
 source "$DIR/.venv/bin/activate"
 
-# 后台启动
-nohup python main.py --serve > /dev/null 2>&1 &
+# 后台启动 Web 服务
+nohup python main.py --serve-only > /dev/null 2>&1 &
 PID=$!
 echo "$PID" > "$PIDFILE"
 
+# 后台启动 ngrok 隧道
+NGROK_PIDFILE="$DIR/.ngrok.pid"
+nohup ngrok http --url=yb-daily-stock.ngrok.app 8000 > /dev/null 2>&1 &
+NGROK_PID=$!
+echo "$NGROK_PID" > "$NGROK_PIDFILE"
+
 echo "服务已启动 (PID: $PID)"
+echo "ngrok 已启动 (PID: $NGROK_PID)"
+echo "公网地址: https://yb-daily-stock.ngrok.app"
 echo "日志: tail -f $DIR/logs/app.log"
 echo "停止: bash stop.sh"

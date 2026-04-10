@@ -18,3 +18,16 @@ else
     echo "进程 $PID 已不存在"
 fi
 rm -f "$PIDFILE"
+
+# 停止 ngrok
+NGROK_PIDFILE="$DIR/.ngrok.pid"
+if [ -f "$NGROK_PIDFILE" ]; then
+    NGROK_PID=$(cat "$NGROK_PIDFILE")
+    if kill -0 "$NGROK_PID" 2>/dev/null; then
+        kill "$NGROK_PID"
+        echo "ngrok 已停止 (PID: $NGROK_PID)"
+    else
+        echo "ngrok 进程 $NGROK_PID 已不存在"
+    fi
+    rm -f "$NGROK_PIDFILE"
+fi
